@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Nair ✨</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+}
+
+/* Fondo */
+.stars, canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,100% { opacity: .2; }
+  50% { opacity: 1; }
+}
+
+/* Texto */
+.content {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  margin-top: 20vh;
+  padding: 20px;
+}
+
+/* Pregunta */
+.question {
+  position: fixed;
+  bottom: 70px;
+  width: 100%;
+  text-align: center;
+  z-index: 10;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* JUNTOS */
+  margin-top: 15px;
+  position: relative;
+}
+
+button {
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+}
+
+#yes {
+  background: #ff4d6d;
+  color: white;
+}
+
+#no {
+  background: #555;
+  color: white;
+  position: relative; /* IMPORTANTE */
+}
+
+/* Corazones */
+.heart {
+  position: absolute;
+  font-size: 14px;
+  animation: float 6s linear infinite;
+  opacity: .8;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1.4); opacity: 0; }
+}
+
+/* Final */
+.final {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.big-heart {
+  font-size: 120px;
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="content">
+  <h1 id="dia"></h1>
+  <p>
+    Nair, desde hoy me dedicaré a conquistarte.<br>
+    Porque entre todas las estrellas del cielo,<br>
+    sos la única que no dejo de mirar ✨
+  </p>
+</div>
+
+<div class="question">
+  <h2>¿Estás dispuesta?</h2>
+  <div class="buttons">
+    <button id="yes">Sí 💖</button>
+    <button id="no">No</button>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="final" id="final">
+  <div class="big-heart">❤️</div>
+  <h2>Sabía que dirías que sí ✨</h2>
+</div>
+
+<script>
+// Día
+const hoy = new Date();
+const fin = new Date(hoy.getFullYear(),11,31);
+document.getElementById("dia").textContent =
+  `Día 1 de ${Math.ceil((fin-hoy)/86400000)}`;
+
+// Estrellas
+const stars = document.getElementById("stars");
+for(let i=0;i<120;i++){
+  const s=document.createElement("div");
+  s.className="star";
+  s.style.top=Math.random()*100+"%";
+  s.style.left=Math.random()*100+"%";
+  s.style.animationDuration=(1.5+Math.random()*3)+"s";
+  stars.appendChild(s);
+}
+
+// Corazones
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerText="❤️";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),8000);
+},300);
+
+// Botón NO: solo huye cuando lo intentan tocar
+const noBtn = document.getElementById("no");
+
+function moverNo() {
+  const x = (Math.random() * 200 - 100);
+  const y = (Math.random() * 120 - 60);
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+noBtn.addEventListener("mouseover", moverNo);
+noBtn.addEventListener("touchstart", moverNo);
+
+// Botón SÍ
+const yesBtn = document.getElementById("yes");
+const final = document.getElementById("final");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+yesBtn.addEventListener("click", () => {
+  final.style.display = "flex";
+  fireworks();
+});
+
+function fireworks() {
+  const p=[];
+  for(let i=0;i<160;i++){
+    p.push({
+      x:canvas.width/2,
+      y:canvas.height/2,
+      vx:(Math.random()-.5)*8,
+      vy:(Math.random()-.5)*8,
+      a:1
+    });
+  }
+  function anim(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    p.forEach(o=>{
+      o.x+=o.vx;
+      o.y+=o.vy;
+      o.a-=.015;
+      ctx.fillStyle=`rgba(255,80,150,${o.a})`;
+      ctx.beginPath();
+      ctx.arc(o.x,o.y,3,0,Math.PI*2);
+      ctx.fill();
+    });
+    if(p[0].a>0) requestAnimationFrame(anim);
+  }
+  anim();
+}
+</script>
+
+</body>
+</html>
